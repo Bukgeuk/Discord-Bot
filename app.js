@@ -48,8 +48,7 @@ client.on('ready', () => {
         if (TIMER_I === 6) {
             TIMER_I = 1
             stack.clear()
-        }
-        else TIMER_I++
+        } else TIMER_I++
     }, 10000)
 })
 

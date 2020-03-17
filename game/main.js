@@ -26,6 +26,7 @@ const io = require('./io')
 const join = require('./join')
 const config = require('../config')
 const error = require('../function/error')
+const AdventureFunc = require('./adventure')
 
 var funcs = {}
 
@@ -39,9 +40,6 @@ function UserData(nickname, link){
     this.BasicHealth = 30
     this.BasicPower = 10
 
-    this.AlphaHealth = 0
-    this.AlphaPower = 0
-
     this.Equipment = []
 
     this.Level = 1
@@ -51,6 +49,7 @@ function UserData(nickname, link){
     this.Items = []
 
     this.ProfileImage = link
+    this.Introduce = ''
 }
 
 function GetUserData(server, id){
@@ -137,55 +136,19 @@ function SendUI(client, message, embed){
     embed.setTitle('**Lv.' + Data.Level + '** ' + Data.Name)
     .setThumbnail(Data.ProfileImage)
     .addField('\u200b', '\u200b', false)
-    .addField('체력 ❤️', '**' + Data.NowHealth + '/' + (Number(Data.BasicHealth) + Number(Data.AlphaHealth)) + '**', true)
-    .addField('공격력 ⚔️', '**' + (Number(Data.BasicPower) + Number(Data.AlphaPower)) + '**', true)
-    .addField('경험치 ⭐', '**' + Data.NowExp + '/' + Number(Data.MaxExp) + '**', true)
+    .addField('체력 ❤️', '**' + Data.NowHealth + '/' + Data.BasicHealth + '\n(' + ((Number(Data.NowHealth) / Number(Data.BasicHealth)) * 100).toFixed(2) + '%)**', true)
+    .addField('공격력 ⚔️', '**' + Data.BasicPower + '**', true)
+    .addField('경험치 ⭐', '**' + Data.NowExp + '/' + Data.MaxExp + '**', true)
     .addField('자산 💰', '**' + Data.Money + '** 💵', true)
+    .addField('\u200b', '\u200b', false)
+    .addField('경고 ⚠️', '아직 **얼리엑세스** 버전이라\n계정이 삭제되거나 오류가 발생할 수 있어!', false)
     .addField('\u200b', '\u200b', false)
     .setAuthor(message.author.tag, message.author.avatarURL(config.ImageOption))
     .setFooter('치즈덕 게임')
     .setColor(color)
     .setTimestamp();
 
-    const prom = message.channel.send(embed)
-    prom.then((msg) => {
-        msg.react('💎')
-        msg.react('🛒')
-        msg.react('🎒')
-        msg.react('❌')
-
-        const filter = (reaction, user) => {
-            return user.id === message.author.id;
-        };
-        
-        const collector = msg.createReactionCollector(filter, { time: 20000 });
-        
-        collector.on('collect', (reaction, reactionCollector) => {
-
-            switch(reaction.emoji.name){
-                case '💎':
-                    collector.stop()
-                    return;
-                case '🛒':
-                    collector.stop()
-                    return;
-                case '🎒':
-                    collector.stop()
-                    return;
-                case '❌':
-                    collector.stop()
-                    return;
-            }
-    
-        });
-        
-        collector.on('end', collected => {
-            msg.reactions.removeAll()
-            return;
-        });
-    }).catch(error => {
-        console.log(error)
-    })
+    message.channel.send(embed)
 }
 
 function ChangeNickname(client, message, embed){
@@ -210,9 +173,51 @@ function ChangeNickname(client, message, embed){
     message.channel.send(embed)
 }
 
+function ChangeProfileImage(client, message, embed){
+    let Data = GetUserData(message.guild.id, message.author.id)
+    let arg = message.content.split(' ')
+
+    embed.setTitle('프로필 이미지 변경 성공!')
+    .setDescription('이 이미지로 프로필 이미지를 변경했어!')
+    .setThumbnail(arg[2])
+    .setAuthor('치즈덕', client.user.avatarURL(config.ImageOption))
+    .setFooter('치즈덕 게임')
+    .setColor('#00FF00')
+    .setTimestamp()
+
+    Data.ProfileImage = arg[2]
+    io.write(Data, message.guild.id, message.author.id)
+
+    message.channel.send(embed)
+}
+
+function ChangeIntroduce(client, message, embed){
+    let Data = GetUserData(message.guild.id, message.author.id)
+    let cut = 0
+    for(let i = 0; i < 2; i++){
+        cut = message.content.indexOf(' ', cut + 1)
+    }
+
+    let text = message.content.substr(cut + 1)
+
+    embed.setTitle('소개글 변경 성공!')
+    .setDescription('```' + text + '```\n이걸로 소개글을 변경했어!')
+    .setAuthor('치즈덕', client.user.avatarURL(config.ImageOption))
+    .setFooter('치즈덕 게임')
+    .setColor('#00FF00')
+    .setTimestamp()
+
+    Data.Introduce = text
+    io.write(Data, message.guild.id, message.author.id)
+
+    message.channel.send(embed)
+}
+
 function SendTutorial(client, message, embed){
 
 }
+
+
 
 funcs.main = function(client, message, embed){
     let cmd_arr = message.content.split(' ')
@@ -224,11 +229,27 @@ funcs.main = function(client, message, embed){
 
     switch(cmd_arr[1]){
         case '튜토리얼':
+        case 'tutorial':
             SendTutorial(client, message, embed)
             return;
         case '닉네임':
         case '닉넴':
+        case 'nickname':
             ChangeNickname(client, message, embed)
+            return;
+        case '프로필사진':
+        case '프사':
+        case 'profileimage':
+            ChangeProfileImage(client, message, embed)
+            return;
+        case '소개':
+        case '소개글':
+        case 'introduce':
+            ChangeIntroduce(client, message, embed)
+            return;
+        case '모험':
+        case 'adventure':
+            AdventureFunc.GoAdventure(client, message, embed)
             return;
         default:
             error.unknownargument(client, message, embed)
