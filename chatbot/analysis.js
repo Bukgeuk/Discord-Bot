@@ -110,7 +110,7 @@ exports.run = function(client, message, embed, attachment, keynum){
         return
     }
 
-    const dialog = new Dialogflow(config.InteractiveSystem.Dialogflow.ProjectID, './discord-bot-270504-89b4caeb77df.json')
+    const dialog = new Dialogflow(config.InteractiveSystem.Dialogflow.ProjectID, config.DialogflowKeyFile)
     dialog.sendToDialogflow(content, 'session-' + message.author.id).then(function(value){
         var fulfillmentText = value[0].queryResult.fulfillmentText;
 

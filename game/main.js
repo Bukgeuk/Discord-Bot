@@ -130,6 +130,10 @@ function SendUI(client, message, embed){
         return
     }
 
+    if (Data.Level === 1) var color = Colors[0]
+    else if (Data.Level > 100) var color = Colors[19]
+    else var color = Colors[Math.floor((Data.Level - 1) / 5)]
+
     embed.setTitle('**Lv.' + Data.Level + '** ' + Data.Name)
     .setThumbnail(Data.ProfileImage)
     .addField('\u200b', '\u200b', false)
@@ -140,7 +144,7 @@ function SendUI(client, message, embed){
     .addField('\u200b', '\u200b', false)
     .setAuthor(message.author.tag, message.author.avatarURL(config.ImageOption))
     .setFooter('치즈덕 게임')
-    .setColor('#00FF00')
+    .setColor(color)
     .setTimestamp();
 
     const prom = message.channel.send(embed)
