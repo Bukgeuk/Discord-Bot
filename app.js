@@ -141,7 +141,7 @@ client.on('message', message => {
     } else if ((message.content.startsWith('leave') || message.content.startsWith('탈퇴'))) {
         game.leave(client, message, new Discord.MessageEmbed())
     } else if ((message.content.startsWith('game') || message.content.startsWith('게임'))) {
-        game.main(client, message, new Discord.MessageEmbed())
+        game.main(client, message, Discord.MessageEmbed)
     } else if (flag) {
         for(var i = 0; i < config.InteractiveSystem.Keyword.length; i++) {
             message.content = message.content.replace(config.InteractiveSystem.Keyword[i], '')

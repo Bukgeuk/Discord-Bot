@@ -49,8 +49,10 @@ ex.auto = function(client, message, embed, isusingAI){
     if (length <= 20) ex.add(message.author.id, message.author.tag, 2)
     else ex.add(message.author.id, message.author.tag, length / 10)
 
-    if(stack[message.author.id] > 20){
-        stack[message.author.id] = 0
+    console.log(stack[message.author.id])
+
+    if(stack[message.author.id].num > 30){
+        stack[message.author.id].num = 0
         ban.add(message.author.id, message.author.tag)
 
         embed.setTitle('나 너무 갈구지 마...')
