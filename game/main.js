@@ -36,15 +36,18 @@ function UserData(nickname, link){
     this.Money = 0
 
     this.NowHealth = 30
+    this.MaxHealth = 30 // * 1.3
 
-    this.BasicHealth = 30
-    this.BasicPower = 10
+    this.Power = 10 // * 1.3
 
     this.Equipment = []
 
     this.Level = 1
     this.NowExp = 0
-    this.MaxExp = 50
+    this.MaxExp = 50 // * 1.3
+
+    this.UpExp = 10 // * 1.1
+    this.UpMoney = 10 // * 1.5
 
     this.Items = []
 
@@ -55,6 +58,7 @@ function UserData(nickname, link){
 function GetUserData(server, id){
     let obj = io.read(server, id)
     if (obj === 'error') return obj
+    else if (obj === 'undefined') return obj
     else return JSON.parse(obj)
 }
 
@@ -136,9 +140,9 @@ function SendUI(client, message, embed){
     embed.setTitle('**Lv.' + Data.Level + '** ' + Data.Name)
     .setThumbnail(Data.ProfileImage)
     .addField('\u200b', '\u200b', false)
-    .addField('체력 ❤️', '**' + Data.NowHealth + '/' + Data.BasicHealth + '\n(' + ((Number(Data.NowHealth) / Number(Data.BasicHealth)) * 100).toFixed(2) + '%)**', true)
-    .addField('공격력 ⚔️', '**' + Data.BasicPower + '**', true)
-    .addField('경험치 ⭐', '**' + Data.NowExp + '/' + Data.MaxExp + '**', true)
+    .addField('체력 ❤️', '**' + Data.NowHealth + '/' + Data.MaxHealth + '\n(' + ((Number(Data.NowHealth) / Number(Data.MaxHealth)) * 100).toFixed(2) + '%)**', true)
+    .addField('공격력 ⚔️', '**' + Data.Power + '**', true)
+    .addField('경험치 ⭐', '**' + Data.NowExp + '/' + Data.MaxExp + '\n(' + ((Number(Data.NowExp) / Number(Data.MaxExp)) * 100).toFixed(2) + '%)**', true)
     .addField('자산 💰', '**' + Data.Money + '** 💵', true)
     .addField('\u200b', '\u200b', false)
     .addField('경고 ⚠️', '아직 **얼리엑세스** 버전이라\n계정이 삭제되거나 오류가 발생할 수 있어!', false)
@@ -158,6 +162,12 @@ function ChangeNickname(client, message, embed){
     }
 
     let Data = GetUserData(message.guild.id, message.author.id)
+
+    if(Data === 'error'){
+        error.createaccountplz(client, message, embed)
+        return
+    }
+
     let arg = message.content.split(' ')
 
     embed.setTitle('닉네임 변경 성공!')
@@ -175,6 +185,12 @@ function ChangeNickname(client, message, embed){
 
 function ChangeProfileImage(client, message, embed){
     let Data = GetUserData(message.guild.id, message.author.id)
+
+    if(Data === 'error'){
+        error.createaccountplz(client, message, embed)
+        return
+    }
+
     let arg = message.content.split(' ')
 
     embed.setTitle('프로필 이미지 변경 성공!')
@@ -193,6 +209,12 @@ function ChangeProfileImage(client, message, embed){
 
 function ChangeIntroduce(client, message, embed){
     let Data = GetUserData(message.guild.id, message.author.id)
+
+    if(Data === 'error'){
+        error.createaccountplz(client, message, embed)
+        return
+    }
+
     let cut = 0
     for(let i = 0; i < 2; i++){
         cut = message.content.indexOf(' ', cut + 1)
@@ -219,7 +241,8 @@ function SendTutorial(client, message, embed){
 
 
 
-funcs.main = function(client, message, embed){
+funcs.main = function(client, message, Create_Embed){
+    let embed = new Create_Embed()
     let cmd_arr = message.content.split(' ')
 
     if (cmd_arr.length === 1) {
@@ -249,7 +272,15 @@ funcs.main = function(client, message, embed){
             return;
         case '모험':
         case 'adventure':
-            AdventureFunc.GoAdventure(client, message, embed)
+            let Data = GetUserData(message.guild.id, message.author.id)
+            if(Data === 'error'){
+                error.createaccountplz(client, message, embed)
+                return
+            }
+            if (Data.Level === 1) var color = Colors[0]
+            else if (Data.Level > 100) var color = Colors[19]
+            else var color = Colors[Math.floor((Data.Level - 1) / 5)]
+            io.write(AdventureFunc.GoAdventure(client, message, Create_Embed, GetUserData(message.guild.id, message.author.id), color), message.guild.id, message.author.id)
             return;
         default:
             error.unknownargument(client, message, embed)

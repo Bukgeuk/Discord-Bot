@@ -136,7 +136,7 @@ list.createaccountplz = function(client, message, embed){
     .setTimestamp()
     .setColor('#FF0000')
     .setAuthor('치즈덕', client.user.avatarURL(config.ImageOption))
-    .setDescription('게임을 시작하려면 계정을 만들어야 돼!')
+    .setDescription('게임을 시작하려면\n**\"덕참여\"** 명령어로 계정을 만들어줘!')
     message.channel.send(embed)
 }
 
