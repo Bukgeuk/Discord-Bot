@@ -1,2 +1,2 @@
-# This is
+# Intro
 **JavaScript** Discord Bot!  
