@@ -149,6 +149,7 @@ client.on('message', message => {
         let now = Date.now()
         let str = time.MsToTime(now - UPTIME)
         let embed = new Discord.MessageEmbed()
+        
         embed.setTitle('업타임')
         .setDescription(str)
         .setAuthor('치즈덕', client.user.avatarURL(config.ImageOption))
