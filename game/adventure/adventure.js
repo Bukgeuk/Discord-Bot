@@ -1,5 +1,5 @@
-const config = require('../config')
-const Level = require('./level')
+const config = require('../../config')
+const Level = require('../function/level')
 
 var funcs = {}
 

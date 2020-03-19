@@ -23,10 +23,10 @@ const Colors = [
 ]
 
 const io = require('./io')
-const join = require('./join')
+const join = require('./function/join')
 const config = require('../config')
 const error = require('../function/error')
-const AdventureFunc = require('./adventure')
+const AdventureFunc = require('./adventure/adventure')
 
 var funcs = {}
 
@@ -112,17 +112,35 @@ funcs.leave = function(client, message, embed){
         message.channel.send(embed)
         return;
     }
-    let nickname = JSON.parse(io.read(message.guild.id, message.author.id)).Name
-    join.leave(message.guild.id, message.author.id)
-    io.delete(message.guild.id, message.author.id)
 
-    embed.setTitle('계정 삭제 성공!')
-    .setDescription('**' + nickname + '** 계정을 삭제했어!')
-    .setAuthor('치즈덕', client.user.avatarURL(config.ImageOption))
-    .setFooter('치즈덕 게임')
-    .setColor('#00FF00')
-    .setTimestamp()
-    message.channel.send(embed)
+    message.channel.send('<@' + message.author.id + '>, 계정의 닉네임을 입력해줘!')
+
+    const filter = m => m.author.id === message.author.id
+    const collector = message.channel.createMessageCollector(filter, { time: 10000 });
+    var complete = false
+
+    collector.on('collect', m => {
+        let nickname = JSON.parse(io.read(message.guild.id, message.author.id)).Name
+        if(m.content === nickname){
+            complete = true
+
+            collector.stop()
+            join.leave(message.guild.id, message.author.id)
+            io.delete(message.guild.id, message.author.id)
+    
+            embed.setTitle('계정 삭제 성공!')
+            .setDescription('**' + nickname + '** 계정을 삭제했어!')
+            .setAuthor('치즈덕', client.user.avatarURL(config.ImageOption))
+            .setFooter('치즈덕 게임')
+            .setColor('#00FF00')
+            .setTimestamp()
+            message.channel.send(embed)
+        }
+    });
+    
+    collector.on('end', collected => {
+        if (!complete) message.channel.send('세션이 만료됐어!\n계정을 삭제하려면 다시 시도해줘!')
+    });
 }
 
 function SendUI(client, message, embed){
