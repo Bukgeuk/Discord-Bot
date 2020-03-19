@@ -1,4 +1,7 @@
+const UPTIME = Date.now();
+
 const config = require('./config')
+const time = require('./function/time')
 const Log = require('./function/log')
 const Discord = require('discord.js')
 const fs = require('fs')
@@ -142,6 +145,18 @@ client.on('message', message => {
         game.leave(client, message, new Discord.MessageEmbed())
     } else if ((message.content.startsWith('game') || message.content.startsWith('게임'))) {
         game.main(client, message, Discord.MessageEmbed)
+    } else if ((message.content.startsWith('uptime') || message.content.startsWith('업타임'))) {
+        let now = Date.now()
+        let str = time.MsToTime(now - UPTIME)
+        let embed = new Discord.MessageEmbed()
+        embed.setTitle('업타임')
+        .setDescription(str)
+        .setAuthor('치즈덕', client.user.avatarURL(config.ImageOption))
+        .setFooter('치즈덕 업타임')
+        .setColor('#FF8C00')
+        .setTimestamp()
+
+        message.channel.send(embed)
     } else if (flag) {
         for(var i = 0; i < config.InteractiveSystem.Keyword.length; i++) {
             message.content = message.content.replace(config.InteractiveSystem.Keyword[i], '')
