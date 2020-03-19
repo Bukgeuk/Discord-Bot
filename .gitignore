@@ -2,7 +2,6 @@ node_modules/
 Data/
 Log/
 build/
-.vs/
 .vscode/
 config.js
 *.txt
