@@ -10,5 +10,5 @@ exports.MsToTime = function (duration) {
     seconds = (seconds < 10) ? "0" + seconds : seconds;*/
     milliseconds = (milliseconds < 10) ? "0" + milliseconds : milliseconds;
 
-    return days + "일 " + hours + "시간 " + minutes + "분 " + seconds + "초 " + milliseconds;
+    return (days + "일 " + hours + "시간 " + minutes + "분 " + seconds + "초 " + milliseconds)
 }
