@@ -30,29 +30,31 @@ const AdventureFunc = require('./adventure/adventure')
 
 var funcs = {}
 
-function UserData(nickname, link){
-    this.Name = nickname
+class UserData {
+    constructor(nickname, link){
+        this.Name = nickname
 
-    this.Money = 0
-
-    this.NowHealth = 30
-    this.MaxHealth = 30 // * 1.3
-
-    this.Power = 10 // * 1.3
-
-    this.Equipment = []
-
-    this.Level = 1
-    this.NowExp = 0
-    this.MaxExp = 50 // * 1.3
-
-    this.UpExp = 10 // * 1.1
-    this.UpMoney = 10 // * 1.5
-
-    this.Items = []
-
-    this.ProfileImage = link
-    this.Introduce = ''
+        this.Money = 0
+    
+        this.NowHealth = 30
+        this.MaxHealth = 30 // * 1.3
+    
+        this.Power = 10 // * 1.3
+    
+        this.Equipment = []
+    
+        this.Level = 1
+        this.NowExp = 0
+        this.MaxExp = 50 // * 1.3
+    
+        this.UpExp = 10 // * 1.1
+        this.UpMoney = 10 // * 1.5
+    
+        this.Items = []
+    
+        this.ProfileImage = link
+        this.Introduce = ''
+    }
 }
 
 function GetUserData(server, id){
